@@ -144,13 +144,27 @@ DIGITS = {
   '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9
 }
 
-def string_to_integer(string)
-  digits = string.chars.map { |char| DIGITS[char] }
+def check_neg(string)
+  if string[0] == '-'
+    true
+  else
+    false
+  end
+end
 
+def string_to_signed_integer(true_or_false, string)
+  string.delete! '-+'
+  p string
+  digits = string.chars.map { |char| DIGITS[char] }
   value = 0
   digits.each { |digit| value = 10 * value + digit }
+  if true_or_false
+    value = value * (-1)
+  else
+  end
   value
 end
 
-p string_to_integer('4321') == 4321
-p string_to_integer('570') == 570
+p string_to_signed_integer(check_neg('4321'), '4321') == 4321
+p string_to_signed_integer(check_neg('-570'), '-570') == -570
+p string_to_signed_integer(check_neg('+100'), '+100') == 100
