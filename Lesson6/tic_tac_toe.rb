@@ -57,7 +57,7 @@ def show_current_board_no_numbers(chosen_values)
     col += 2
     current_number += 1
   end
-  board
+  puts board
 end
 
 # give array of available spots for computer_choice method
@@ -187,11 +187,12 @@ end
 
 # -----------------------------------------------------------------------------
 
+puts `clear`
 puts "Welcome to Tic-Tac-Toe!"
 user_wins_counter = 0
 comp_wins_counter = 0
 loop do
-  comp_first = false # initialize boolean. It will turn to even if comp goes 1st
+  comp_first = false # initialize boolean. It will turn to true if comp goes 1st
   choice_counter = 0 # initialize counter.
   # Even will be players turn. Odd will be computers.
   loop do
@@ -243,14 +244,14 @@ loop do
       comp_wins_counter += 1
       sleep(1)
       puts "Here's the final board."
-      puts show_current_board_no_numbers(choices_with_x_or_o)
+      show_current_board_no_numbers(choices_with_x_or_o)
       break
     elsif user_a_winner?(choices_with_x_or_o, x_or_o_user)
       puts "User Wins!!"
       user_wins_counter += 1
       sleep(1)
       puts "Here's the final board."
-      puts show_current_board_no_numbers(choices_with_x_or_o)
+      show_current_board_no_numbers(choices_with_x_or_o)
       break
     end
     # determine if the condition is a draw
@@ -259,7 +260,7 @@ loop do
       puts "It's a draw!!"
       sleep(1)
       puts "Here's the final board."
-      puts show_current_board_no_numbers(choices_with_x_or_o)
+      show_current_board_no_numbers(choices_with_x_or_o)
       break
     end
     # user's turn
@@ -281,7 +282,7 @@ loop do
           puts "You chose slot #{user_num}"
           sleep(0.5)
           puts "Here's the updated Board"
-          puts show_current_board_no_numbers(choices_with_x_or_o)
+          show_current_board_no_numbers(choices_with_x_or_o)
           sleep(1.25)
           puts `clear`
           break
@@ -312,7 +313,7 @@ loop do
       puts "The computer chooses spot #{comp_num}"
       sleep(0.5)
       puts "Here's the updated Board"
-      puts show_current_board_no_numbers(choices_with_x_or_o)
+      show_current_board_no_numbers(choices_with_x_or_o)
       sleep(1.25)
       puts `clear`
     else
