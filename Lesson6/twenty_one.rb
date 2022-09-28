@@ -25,17 +25,8 @@ def append_card_arrays(all_cards_arr)
   iteration = 0
   appended_cards_arr = []
   loop do
-    loop do
-      if iteration == 0
-        appended_cards_arr << all_cards_arr[iteration][counter] + " " +
-                              all_cards_arr[iteration + 1][counter]
-      else
-        appended_cards_arr[counter] << " " +
-                                       all_cards_arr[iteration + 1][counter]
-      end
-      counter += 1
-      break if counter == num_lines_of_card
-    end
+    appended_cards_arr = append_cards(num_lines_of_card, iteration, counter,
+                                      appended_cards_arr, all_cards_arr)
     counter = 0
     iteration += 1
     break if iteration == (num_of_cards - 1)
@@ -43,8 +34,29 @@ def append_card_arrays(all_cards_arr)
   appended_cards_arr
 end
 
+def append_cards(num_lines, iteration, counter, append_card_arr, cards_arr)
+  loop do
+    if iteration == 0
+      append_card_arr << cards_arr[iteration][counter] + " " +
+                         cards_arr[iteration + 1][counter]
+    else
+      append_card_arr[counter] << " " +
+                                  cards_arr[iteration + 1][counter]
+    end
+    counter += 1
+    break if counter == num_lines
+  end
+  append_card_arr
+end
+
 # Calculates value of given cards
 def get_total_value(value_arr)
+  total_non_aces = value_non_aces(value_arr)
+  total = value_only_aces(value_arr, total_non_aces)
+  total
+end
+
+def value_non_aces(value_arr)
   total_value = 0
   value_arr.each do |str|
     if str == " J " || str == " Q " || str == " K "
@@ -56,17 +68,21 @@ def get_total_value(value_arr)
       total_value += num
     end
   end
+  total_value
+end
+
+def value_only_aces(value_arr, total)
   value_arr.each do |str|
     if str == " A "
-      num = if ace_high?(total_value)
+      num = if ace_high?(total)
               11
             else
               1
             end
-      total_value += num
+      total += num
     end
   end
-  total_value
+  total
 end
 
 # Assigns suit and value for a card that has not been taken yet
@@ -87,22 +103,41 @@ def ace_high?(total)
   total < 11
 end
 
+def wait_until_user_ready
+  puts "Enter anything to continue."
+  gets.chomp
+end
+
+def cool_21_display(str)
+  time_counter = 0.05
+  21.times do
+    puts str
+    sleep(time_counter)
+  end
+  puts `clear`
+end
+
+def number_wins_to_play_to
+  first_to = 1
+  loop do
+    puts "How many win(s) would you like to play to? (Max is 21)"
+    first_to = gets.chomp.to_i
+    if first_to >= 1 && first_to <= 21
+      puts "Great! First to #{first_to} win(s) is the winner!"
+      break
+    else
+      puts "Invalid. Please select an integer 1-21."
+    end
+  end
+  first_to
+end
+
 # ------------------------------------------------------------------------------
 
 puts `clear`
 puts "Welcome to Twenty-One!"
-first_to = 1
-loop do
-  puts "How many win(s) would you like to play to? (Max is 21)"
-  first_to = gets.chomp.to_i
-  if first_to >= 1 && first_to <= 21
-    puts "Great! First to #{first_to} win(s) is the winner!"
-    break
-  else
-    puts "Invalid. Please select an integer 1-21."
-  end
-end
-sleep(1.5)
+first_to = number_wins_to_play_to
+wait_until_user_ready
 player_win_total = 0
 dealer_win_total = 0
 loop do
@@ -170,9 +205,8 @@ loop do
                                           new_player_card[1])
       player_values << new_player_card[1]
       puts "You drew a..."
-      sleep(1)
       puts new_player_card_arr
-      sleep(3)
+      wait_until_user_ready
       if player_append_card_counter < 5
         player_cards = append_card_arrays([player_cards, new_player_card_arr])
       elsif player_append_card_counter == 5
@@ -188,17 +222,18 @@ loop do
     puts `clear`
     if current_player_total > 21
       puts "You busted!"
-      sleep(2)
       break
     elsif current_player_total == 21
       puts "You hit 21!!"
-      sleep(2)
+      cool_21_display("21")
+      puts "You hit 21!!"
+      wait_until_user_ready
     end
+    puts "These are the Dealer's known cards: "
+    puts dealer_cards_1_hidden
     puts "These are your current cards: "
     puts player_cards
     puts player_cards_row2
-    puts "These are the Dealer's known cards: "
-    puts dealer_cards_1_hidden
     puts "This is your total value: "
     puts current_player_total
   end
@@ -219,9 +254,8 @@ loop do
                                           new_dealer_card[1])
       dealer_values << new_dealer_card[1]
       puts "The dealer drew a..."
-      sleep(1)
       puts new_dealer_card_arr
-      sleep(3)
+      wait_until_user_ready
       if dealer_append_card_counter < 5
         dealer_cards = append_card_arrays([dealer_cards, new_dealer_card_arr])
       elsif dealer_append_card_counter == 5
@@ -235,7 +269,6 @@ loop do
       puts dealer_cards
       puts "This is the dealer's total value: "
       puts current_dealer_total
-      sleep(3)
       break
     end
     current_dealer_total = get_total_value(dealer_values)
@@ -244,17 +277,20 @@ loop do
     puts dealer_cards_row2
     puts "This is the dealer's total value: "
     puts current_dealer_total
-    sleep(3)
+    wait_until_user_ready
     puts `clear`
     if current_dealer_total > 21
       puts "The dealer busted!"
+      wait_until_user_ready
       break
     elsif current_dealer_total == 21
       puts "The dealer hit 21!!"
+      cool_21_display("21")
+      puts "The dealer hit 21!!"
+      wait_until_user_ready
     end
   end
   dealer_bust = true if current_dealer_total > 21
-  sleep(2)
   if player_bust
     puts "Dealer Wins!"
     dealer_win_total += 1
@@ -263,54 +299,51 @@ loop do
     player_win_total += 1
   elsif current_player_total > current_dealer_total
     puts "You Win!"
-    sleep(1)
+    wait_until_user_ready
+    puts `clear`
     puts "Final Score: "
     puts "You: #{current_player_total}"
     puts "Dealer: #{current_dealer_total}"
     player_win_total += 1
   elsif current_player_total < current_dealer_total
-    puts "Dealer Wins!"
-    sleep(1)
+    wait_until_user_ready
+    puts `clear`
     puts "Final Score: "
     puts "You: #{current_player_total}"
     puts "Dealer: #{current_dealer_total}"
     dealer_win_total += 1
   else
     puts "It's a tie!"
-    sleep(1)
+    wait_until_user_ready
+    puts `clear`
     puts "Final Score: "
     puts "You: #{current_player_total}"
     puts "Dealer: #{current_dealer_total}"
   end
-  sleep(2)
+  wait_until_user_ready
   puts `clear`
   puts "Your Win Total: #{player_win_total}"
   puts "Dealer Win Total: #{dealer_win_total}"
-  sleep(3)
+  wait_until_user_ready
   if player_win_total == first_to
-    sleep(2)
     puts `clear`
     puts "Player has won #{first_to} game(s)!"
+    wait_until_user_ready
     puts "GAME OVER"
     break
   elsif dealer_win_total == first_to
-    sleep(2)
     puts `clear`
     puts "Dealer has won #{first_to} game(s)!"
-    sleep(2)
+    wait_until_user_ready
     puts `clear`
     puts "GAME OVER"
     break
   end
 end
-
-sleep(2)
+wait_until_user_ready
 puts `clear`
 puts "Final Win Total: "
-sleep(1)
 puts "You: #{player_win_total}"
-sleep(1)
 puts "Dealer: #{dealer_win_total}"
-sleep(2)
+wait_until_user_ready
 puts "Thanks for playing!"
-sleep(1)

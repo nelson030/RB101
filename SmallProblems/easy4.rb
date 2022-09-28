@@ -139,32 +139,89 @@ p running_total([]) == []
 =end
 
 #7
+
+=begin
 DIGITS = {
-  '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
-  '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9
+  0 => "0",
+  1 => "1",
+  2 => "2",
+  3 => "3",
+  4 => "4",
+  5 => "5",
+  6 => "6",
+  7 => "7",
+  8 => "8",
+  9 => "9"
 }
 
-def check_neg(string)
-  if string[0] == '-'
-    true
-  else
-    false
+def signed_integer_to_string(num)
+  number_array = []
+  num_str_arr = []
+  num_str = ''
+  div_array = [100000, 10000, 1000, 100, 10, 1]
+  counter = 0
+  if num < 0
+    negative = true
+    num = num * -1
   end
+  loop do
+    number_array << (num / div_array[counter])
+    num = (num % div_array[counter])
+    counter += 1
+    break if counter == div_array.length
+  end
+  number_array.each do |number|
+    num_str_arr << DIGITS[number]
+  end
+  has_non_zero_lead = false
+  p num_str_arr
+  num_str_arr.map do |char|
+    has_non_zero_lead = true if char != '0' && has_non_zero_lead == false
+    num_str << char if has_non_zero_lead
+  end
+  if negative == true
+    num_str = '-' + num_str
+  elsif num_str == ''
+    num_str = '0'
+  else
+    num_str = '+' + num_str
+  end
+  num_str
 end
 
-def string_to_signed_integer(true_or_false, string)
-  string.delete! '-+'
-  p string
-  digits = string.chars.map { |char| DIGITS[char] }
-  value = 0
-  digits.each { |digit| value = 10 * value + digit }
-  if true_or_false
-    value = value * (-1)
-  else
+p signed_integer_to_string(4321) == '+4321'
+p signed_integer_to_string(-123) == '-123'
+p signed_integer_to_string(0) == '0'
+=end
+
+#5
+
+def century(year)
+  year = year.to_f
+  cent = (year / 100).ceil
+  cent = cent.to_s
+  if cent.end_with?("11") || cent.end_with?("12") ||
+     cent.end_with?("13") || cent.end_with?("4") ||
+     cent.end_with?("5") || cent.end_with?("6") ||
+     cent.end_with?("7") || cent.end_with?("8") ||
+     cent.end_with?("9") || cent.end_with?("0")
+    cent = cent << "th"
+  elsif cent.end_with?("1") || cent.end_with?("01")
+    cent = cent << "st"
+  elsif cent.end_with?("2") || cent.end_with?("02")
+    cent = cent << "nd"
+  elsif cent.end_with?("3") || cent.end_with?("03")
+    cent = cent << "rd"
   end
-  value
+  cent
 end
 
-p string_to_signed_integer(check_neg('4321'), '4321') == 4321
-p string_to_signed_integer(check_neg('-570'), '-570') == -570
-p string_to_signed_integer(check_neg('+100'), '+100') == 100
+p century(2000) == '20th'
+p century(2001) == '21st'
+p century(1965) == '20th'
+p century(256) == '3rd'
+p century(5) == '1st'
+p century(10103) == '102nd'
+p century(1052) == '11th'
+p century(1127) == '12th'
+p century(11201) == '113th'

@@ -301,6 +301,7 @@ print_in_box('')
 =end
 
 #11
+=begin
 def spin_me(str)
   str.split.each do |word|
     word.reverse!
@@ -308,3 +309,23 @@ def spin_me(str)
 end
 
 p spin_me("hello world") # "olleh dlrow"
+=end
+
+#5
+
+LETTERS = %(abcdefghijklmnopqrstuvwxyz).split("")
+
+def cleanup(sentence)
+  arr = sentence.split("")
+  clean_arr = []
+  arr.map do |char|
+    if LETTERS.include?(char)
+      clean_arr << char
+    else
+      clean_arr << " " unless clean_arr.last == ' '
+    end
+  end
+  clean_arr.join("")
+end
+
+p cleanup("---what's my +*& line?") == ' what s my line '
